@@ -19,7 +19,7 @@ export function useCreateTrainer() {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : 'No se pudo crear el entrenador.',
+          : 'Could not create trainer.',
       )
       return null
     } finally {

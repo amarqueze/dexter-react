@@ -1,12 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { useLoadingScreen } from '../../../shared/components'
+import { z } from 'zod'
+import {
+  EyeIcon,
+  LockIcon,
+  MailIcon,
+  PokeScenery,
+  useToast,
+} from '../../../shared/components'
 import superBall from '../../../assets/super_Ball.png'
-import { useAuth } from '../hooks/use-auth'
-import { loginSchema } from '../login.type'
+import { useLogin } from '../hooks/use-login'
 import type { LoginCredentials } from '../login.type'
 import '../login.css'
+import { useAuth } from '../hooks/use-auth'
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Enter your email.')
+    .email('Enter a valid email.'),
+  password: z.string().min(1, 'Enter your password.'),
+  rememberMe: z.boolean(),
+}) satisfies z.ZodType<LoginCredentials>
 
 const initialValues: LoginCredentials = {
   email: '',
@@ -17,7 +36,10 @@ const initialValues: LoginCredentials = {
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
-  const { error, isAuthenticated, isLoading, login, user } = useAuth()
+  const { isAuthenticated } = useAuth()
+  const { error, isLoading, login } = useLogin()
+  const { showLoadingScreen, isLoadingScreenVisible, hideLoadingScreen } = useLoadingScreen()
+  const { showToast } = useToast()
   const {
     register,
     handleSubmit,
@@ -26,34 +48,48 @@ export function LoginPage() {
     defaultValues: initialValues,
     resolver: zodResolver(loginSchema),
   })
+
   const isBusy = isSubmitting || isLoading
 
   async function handleLoginSubmit(values: LoginCredentials) {
-    const response = await login(values)
+    showLoadingScreen('Signing in...');
+    const response = await login(values);
+    await new Promise((resolve) => setTimeout(resolve, 3000)) // Simulate a delay for better UX
+    hideLoadingScreen();
 
     if (response) {
-      navigate('/home', { replace: true })
+      navigate('/home', { replace: true });
     }
   }
 
-  if (isAuthenticated) {
+  useEffect(() => {
+    if (error && !isLoadingScreenVisible) {
+      showToast({
+        title: 'Failed to sign in',
+        message: error,
+        duration: 3000,
+        variant: 'error',
+      })
+    }
+  }, [error, isLoadingScreenVisible, showToast])
+
+  if (isAuthenticated && !isLoadingScreenVisible) {
     return <Navigate to="/home" replace />
   }
 
   return (
     <main className="auth-page">
-
       <section className="auth-panel" aria-labelledby="login-title">
         <div className="auth-brand">
           <img className="auth-logo" src={superBall} alt="" />
           <p className="auth-name">DEXTER</p>
-          <p className="auth-tagline">Explora. Captura. Conoce.</p>
+          <p className="auth-tagline">Explore. Catch. Discover.</p>
         </div>
 
         <form className="auth-card auth-form" onSubmit={handleSubmit(handleLoginSubmit)}>
           <div className="auth-card__header">
-            <h1 id="login-title">Iniciar sesion</h1>
-            <p>Bienvenido de nuevo, entrenador</p>
+            <h1 id="login-title">Sign in</h1>
+            <p>Welcome back, trainer</p>
           </div>
 
           <div className={`textbox ${errors.email ? 'textbox--invalid' : ''}`}>
@@ -63,11 +99,10 @@ export function LoginPage() {
             <input
               className="textbox__control"
               id="login-email"
-              name="email"
               type="email"
-              aria-label="Correo electronico"
+              aria-label="Email"
               autoComplete="email"
-              placeholder="Correo electronico"
+              placeholder="Email"
               {...register('email')}
             />
           </div>
@@ -82,17 +117,16 @@ export function LoginPage() {
             <input
               className="textbox__control"
               id="login-password"
-              name="password"
               type={showPassword ? 'text' : 'password'}
-              aria-label="Contrasena"
+              aria-label="Password"
               autoComplete="current-password"
-              placeholder="Contrasena"
+              placeholder="Password"
               {...register('password')}
             />
             <button
               className="textbox__action"
               type="button"
-              aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               onClick={() => setShowPassword((currentValue) => !currentValue)}
             >
               <EyeIcon />
@@ -108,71 +142,24 @@ export function LoginPage() {
                 type="checkbox"
                 {...register('rememberMe')}
               />
-              <span>Recordarme</span>
+              <span>Remember me</span>
             </label>
-            <Link className="auth-link" to="/login">
-              Olvidaste tu contrasena?
-            </Link>
           </div>
 
-          {error ? <p className="field__error">{error}</p> : null}
-          {user ? <p className="field__hint">Hola, {user.name}.</p> : null}
-
           <button className="button button--primary button--block" type="submit" disabled={isBusy}>
-            {isBusy ? 'Ingresando...' : 'Iniciar sesion'}
+            {isBusy ? 'Signing in...' : 'Sign in'}
           </button>
 
           <p className="auth-switch">
-            No tienes una cuenta?{' '}
+            Don't have an account?{' '}
             <Link className="auth-link" to="/new-trainer">
-              Registrate
+              Register
             </Link>
           </p>
         </form>
       </section>
 
-      <AuthScenery />
+      <PokeScenery />
     </main>
-  )
-}
-
-function MailIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 6h16v12H4z" />
-      <path d="m4 7 8 6 8-6" />
-    </svg>
-  )
-}
-
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 10h10v10H7z" />
-      <path d="M9 10V7a3 3 0 0 1 6 0v3" />
-    </svg>
-  )
-}
-
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
-      <path d="M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-    </svg>
-  )
-}
-
-function AuthScenery() {
-  return (
-    <div className="auth-scenery" aria-hidden="true">
-      <div className="auth-mascot"></div>
-      <div className="auth-signpost">
-        <span>KANTO</span>
-        <span>JOHTO</span>
-        <span>HOENN</span>
-        <span>PALDEA</span>
-      </div>
-    </div>
   )
 }

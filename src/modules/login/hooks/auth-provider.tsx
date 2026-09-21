@@ -1,49 +1,27 @@
 import { useState } from 'react'
 import type { PropsWithChildren } from 'react'
-import { loginApi } from '../api/login.api'
-import type { LoginCredentials, LoginResponse, LoginUser } from '../login.type'
+import type { LoginResponse, LoginUser } from '../login.type'
 import { AuthContext } from './auth-context'
 
 const AUTH_STORAGE_KEY = 'dexter.auth'
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<LoginResponse | null>(getStoredSession)
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
 
-  async function login(credentials: LoginCredentials) {
-    setIsLoading(true)
-    setError(null)
-
-    try {
-      const response = await loginApi(credentials)
-      setSession(response)
-      saveStoredSession(response, credentials.rememberMe)
-      return response
-    } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : 'No se pudo iniciar sesion.',
-      )
-      return null
-    } finally {
-      setIsLoading(false)
-    }
+  function login(authenticatedSession: LoginResponse, rememberMe: boolean) {
+    setSession(authenticatedSession)
+    saveStoredSession(authenticatedSession, rememberMe)
   }
 
   function logout() {
     setSession(null)
-    setError(null)
     removeStoredSession()
   }
 
   return (
     <AuthContext.Provider
       value={{
-        error,
         isAuthenticated: Boolean(session?.user),
-        isLoading,
         login,
         logout,
         token: session?.token ?? null,

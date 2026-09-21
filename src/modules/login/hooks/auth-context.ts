@@ -1,11 +1,9 @@
 import { createContext } from 'react'
-import type { LoginCredentials, LoginResponse, LoginUser } from '../login.type'
+import type { LoginResponse, LoginUser } from '../login.type'
 
 export type AuthContextValue = {
-  error: string | null
   isAuthenticated: boolean
-  isLoading: boolean
-  login: (credentials: LoginCredentials) => Promise<LoginResponse | null>
+  login: (session: LoginResponse, rememberMe: boolean) => void
   logout: () => void
   token: string | null
   user: LoginUser | null

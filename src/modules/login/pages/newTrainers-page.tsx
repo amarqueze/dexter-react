@@ -2,11 +2,44 @@ import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
+import { z } from 'zod'
+import {
+  EyeIcon,
+  LockIcon,
+  MailIcon,
+  PokeScenery,
+  UserIcon,
+  useLoadingScreen,
+  useToast,
+} from '../../../shared/components'
 import superBall from '../../../assets/super_Ball.png'
 import { useCreateTrainer } from '../hooks/use-create-trainer'
-import { newTrainerSchema } from '../login.type'
 import type { NewTrainerFormValues } from '../login.type'
 import '../login.css'
+
+const newTrainerSchema = z
+  .object({
+    firstName: z.string().trim().min(1, 'Enter your first name.'),
+    lastName: z.string().trim().min(1, 'Enter your last name.'),
+    email: z
+      .string()
+      .trim()
+      .min(1, 'Enter your email.')
+      .email('Enter a valid email.'),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters.'),
+    confirmPassword: z.string().min(1, 'Confirm your password.'),
+    acceptedTerms: z
+      .boolean()
+      .refine((acceptedTerms) => acceptedTerms, {
+        message: 'You must accept the terms and privacy policy.',
+      }),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: 'Passwords do not match.',
+    path: ['confirmPassword'],
+  }) satisfies z.ZodType<NewTrainerFormValues>
 
 const initialValues: NewTrainerFormValues = {
   firstName: '',
@@ -21,6 +54,8 @@ export function NewTrainersPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const navigate = useNavigate()
+  const { showToast } = useToast()
+  const { showLoadingScreen, hideLoadingScreen } = useLoadingScreen()
   const { createTrainer, error, isLoading } = useCreateTrainer()
   const {
     register,
@@ -33,21 +68,37 @@ export function NewTrainersPage() {
   const isBusy = isSubmitting || isLoading
 
   async function handleCreateTrainerSubmit(values: NewTrainerFormValues) {
+    showLoadingScreen('Creating trainer...')
     const createdTrainer = await createTrainer(values)
+    await new Promise((resolve) => setTimeout(resolve, 3000)) // Simulate a delay for better UX
+    hideLoadingScreen()
+
+    if (error) {
+      showToast({
+        title: 'Failed to create trainer',
+        message: error,
+        duration: 3000,
+        variant: 'error',
+      })
+    }
 
     if (createdTrainer) {
+      showToast({
+        message: 'Trainer created, please login with your new account.',
+        duration: 3000,
+        variant: 'success',
+      })
       navigate('/login', { replace: true })
     }
   }
 
   return (
     <main className="auth-page">
-      
       <section className="auth-panel" aria-labelledby="new-trainer-title">
         <div className="auth-brand">
           <img className="auth-logo" src={superBall} alt="" />
           <p className="auth-name">DEXTER</p>
-          <p className="auth-tagline">Explora. Captura. Conoce.</p>
+          <p className="auth-tagline">Explore. Catch. Discover.</p>
         </div>
 
         <form
@@ -55,8 +106,8 @@ export function NewTrainersPage() {
           onSubmit={handleSubmit(handleCreateTrainerSubmit)}
         >
           <div className="auth-card__header">
-            <h1 id="new-trainer-title">Crear cuenta</h1>
-            <p>Unete a la comunidad de entrenadores</p>
+            <h1 id="new-trainer-title">Create account</h1>
+            <p>Join the trainer community</p>
           </div>
 
           <div className="auth-grid">
@@ -67,11 +118,10 @@ export function NewTrainersPage() {
               <input
                 className="textbox__control"
                 id="trainer-first-name"
-                name="firstName"
                 type="text"
-                aria-label="Nombre"
+                aria-label="First name"
                 autoComplete="given-name"
-                placeholder="Nombre"
+                placeholder="First name"
                 {...register('firstName')}
               />
             </div>
@@ -80,11 +130,10 @@ export function NewTrainersPage() {
               <input
                 className="textbox__control"
                 id="trainer-last-name"
-                name="lastName"
                 type="text"
-                aria-label="Apellido"
+                aria-label="Last name"
                 autoComplete="family-name"
-                placeholder="Apellido"
+                placeholder="Last name"
                 {...register('lastName')}
               />
             </div>
@@ -103,11 +152,10 @@ export function NewTrainersPage() {
             <input
               className="textbox__control"
               id="trainer-email"
-              name="email"
               type="email"
-              aria-label="Correo electronico"
+              aria-label="Email"
               autoComplete="email"
-              placeholder="Correo electronico"
+              placeholder="Email"
               {...register('email')}
             />
           </div>
@@ -122,17 +170,16 @@ export function NewTrainersPage() {
             <input
               className="textbox__control"
               id="trainer-password"
-              name="password"
               type={showPassword ? 'text' : 'password'}
-              aria-label="Contrasena"
+              aria-label="Password"
               autoComplete="new-password"
-              placeholder="Contrasena"
+              placeholder="Password"
               {...register('password')}
             />
             <button
               className="textbox__action"
               type="button"
-              aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               onClick={() => setShowPassword((currentValue) => !currentValue)}
             >
               <EyeIcon />
@@ -149,18 +196,17 @@ export function NewTrainersPage() {
             <input
               className="textbox__control"
               id="trainer-confirm-password"
-              name="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
-              aria-label="Confirmar contrasena"
+              aria-label="Confirm password"
               autoComplete="new-password"
-              placeholder="Confirmar contrasena"
+              placeholder="Confirm password"
               {...register('confirmPassword')}
             />
             <button
               className="textbox__action"
               type="button"
               aria-label={
-                showConfirmPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'
+                showConfirmPassword ? 'Hide password' : 'Show password'
               }
               onClick={() =>
                 setShowConfirmPassword((currentValue) => !currentValue)
@@ -179,8 +225,8 @@ export function NewTrainersPage() {
               {...register('acceptedTerms')}
             />
             <span>
-              Acepto los <Link className="auth-link" to="/new-trainer">Terminos</Link> y
-              la <Link className="auth-link" to="/new-trainer">Politica</Link>
+              I accept the <Link className="auth-link" to="/new-trainer">Terms</Link> and
+              the <Link className="auth-link" to="/new-trainer">Privacy Policy</Link>
             </span>
           </label>
           {errors.acceptedTerms ? (
@@ -190,69 +236,19 @@ export function NewTrainersPage() {
           {error ? <p className="field__error">{error}</p> : null}
 
           <button className="button button--primary button--block" type="submit" disabled={isBusy}>
-            {isBusy ? 'Creando...' : 'Crear cuenta'}
+            {isBusy ? 'Creating...' : 'Create account'}
           </button>
 
           <p className="auth-switch">
-            Ya tienes una cuenta?{' '}
+            Already have an account?{' '}
             <Link className="auth-link" to="/login">
-              Inicia sesion
+              Sign in
             </Link>
           </p>
         </form>
       </section>
 
-      <AuthScenery />
+      <PokeScenery />
     </main>
-  )
-}
-
-function UserIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
-      <path d="M4 21a8 8 0 0 1 16 0" />
-    </svg>
-  )
-}
-
-function MailIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 6h16v12H4z" />
-      <path d="m4 7 8 6 8-6" />
-    </svg>
-  )
-}
-
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 10h10v10H7z" />
-      <path d="M9 10V7a3 3 0 0 1 6 0v3" />
-    </svg>
-  )
-}
-
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
-      <path d="M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-    </svg>
-  )
-}
-
-function AuthScenery() {
-  return (
-    <div className="auth-scenery" aria-hidden="true">
-      <div className="auth-mascot"></div>
-      <div className="auth-signpost">
-        <span>KANTO</span>
-        <span>JOHTO</span>
-        <span>HOENN</span>
-        <span>PALDEA</span>
-      </div>
-    </div>
   )
 }

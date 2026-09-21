@@ -77,7 +77,7 @@ export async function loginApi(
   )
 
   if (!trainer || trainer.password !== credentials.password) {
-    throw new Error('Correo o contrasena incorrectos.')
+    throw new Error('Email or password is incorrect.')
   }
 
   return Promise.resolve({
@@ -100,26 +100,26 @@ export async function createTrainerApi(
   const confirmPassword = values.confirmPassword.trim()
 
   if (!firstName || !lastName || !email || !password || !confirmPassword) {
-    throw new Error('Completa todos los campos.')
+    throw new Error('Complete all fields.')
   }
 
   if (password.length < 6) {
-    throw new Error('La contrasena debe tener al menos 6 caracteres.')
+    throw new Error('Password must be at least 6 characters.')
   }
 
   if (password !== confirmPassword) {
-    throw new Error('Las contrasenas no coinciden.')
+    throw new Error('Passwords do not match.')
   }
 
   if (!values.acceptedTerms) {
-    throw new Error('Debes aceptar los terminos y la politica.')
+    throw new Error('You must accept the terms and privacy policy.')
   }
 
   const trainers = getStoredTrainers()
   const trainerExists = trainers.some((trainer) => trainer.email === email)
 
   if (trainerExists) {
-    throw new Error('Ya existe una cuenta con este correo.')
+    throw new Error('An account with this email already exists.')
   }
 
   const trainer: StoredTrainer = {
