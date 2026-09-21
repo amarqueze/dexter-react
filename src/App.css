@@ -78,6 +78,11 @@
   padding: 5px;
 }
 
+.button--block {
+  width: 100%;
+  min-height: 48px;
+}
+
 .button__icon {
   width: 16px;
   height: 16px;
@@ -222,6 +227,17 @@
   color: var(--color-text-muted);
 }
 
+.textbox__icon svg,
+.textbox__action svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .textbox__control {
   min-width: 0;
   width: 100%;
@@ -240,6 +256,22 @@
 
 .textbox__control:disabled {
   cursor: not-allowed;
+}
+
+.textbox__action {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+}
+
+.textbox__action:hover {
+  color: var(--color-primary-hover);
+  background: var(--color-primary-soft);
 }
 
 .textbox--invalid {

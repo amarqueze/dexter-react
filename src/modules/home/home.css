@@ -1,0 +1,14 @@
+.home-page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 32px;
+  color: var(--color-heading);
+  background: var(--color-background);
+}
+
+.home-page h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  text-align: center;
+}
