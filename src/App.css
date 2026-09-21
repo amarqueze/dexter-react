@@ -1,0 +1,254 @@
+.button {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.button:hover {
+  border-color: #c6d4e1;
+  background: var(--color-surface-muted);
+}
+
+.button:active {
+  border-color: #b8c7d6;
+  background: #e3edf6;
+  box-shadow: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f1f5f9;
+  box-shadow: none;
+}
+
+.button--primary {
+  border-color: var(--color-primary);
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+.button--primary:hover {
+  border-color: var(--color-primary-hover);
+  background: var(--color-primary-hover);
+}
+
+.button--primary:active {
+  border-color: #003b73;
+  background: #003b73;
+}
+
+.button--subtle {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.button--subtle:hover {
+  border-color: transparent;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+}
+
+.button--icon {
+  width: 32px;
+  padding: 5px;
+}
+
+.button__icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field__label {
+  color: var(--color-heading);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.field__hint,
+.field__error {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.field__hint {
+  color: var(--color-text-muted);
+}
+
+.field__error {
+  color: #b42318;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: inset 0 -1px 0 rgb(15 23 42 / 0.04);
+  font-size: 14px;
+  line-height: 20px;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.input {
+  min-height: 36px;
+  padding: 7px 10px;
+}
+
+.textarea {
+  min-height: 92px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.input:hover,
+.textarea:hover {
+  border-color: #b8c7d6;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--color-primary);
+  outline: 0;
+  box-shadow:
+    inset 0 -2px 0 var(--color-primary),
+    0 0 0 2px var(--color-ring);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #718096;
+  opacity: 1;
+}
+
+.input:disabled,
+.textarea:disabled {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f1f5f9;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.input--invalid,
+.textarea--invalid {
+  border-color: #d92d20;
+}
+
+.input--invalid:focus,
+.textarea--invalid:focus {
+  border-color: #d92d20;
+  box-shadow:
+    inset 0 -2px 0 #d92d20,
+    0 0 0 2px rgb(217 45 32 / 0.18);
+}
+
+.textbox {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+  box-shadow: inset 0 -1px 0 rgb(15 23 42 / 0.04);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.textbox:hover {
+  border-color: #b8c7d6;
+}
+
+.textbox:focus-within {
+  border-color: var(--color-primary);
+  box-shadow:
+    inset 0 -2px 0 var(--color-primary),
+    0 0 0 2px var(--color-ring);
+}
+
+.textbox--disabled,
+.textbox:has(.textbox__control:disabled) {
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  background: #f1f5f9;
+  box-shadow: none;
+}
+
+.textbox__icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--color-text-muted);
+}
+
+.textbox__control {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: inherit;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.textbox__control::placeholder {
+  color: #718096;
+  opacity: 1;
+}
+
+.textbox__control:disabled {
+  cursor: not-allowed;
+}
+
+.textbox--invalid {
+  border-color: #d92d20;
+}
+
+.textbox--invalid:focus-within {
+  border-color: #d92d20;
+  box-shadow:
+    inset 0 -2px 0 #d92d20,
+    0 0 0 2px rgb(217 45 32 / 0.18);
+}
