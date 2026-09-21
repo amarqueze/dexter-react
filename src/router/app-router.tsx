@@ -13,6 +13,7 @@ export function AppRouter() {
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<HomePage />} />
+        <Route path="/home/pokemon/:pokemonId" element={<HomePage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />

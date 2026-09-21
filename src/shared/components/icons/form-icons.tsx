@@ -37,3 +37,22 @@ export function EyeIcon(props: IconProps) {
     </svg>
   )
 }
+
+export function LogoutIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <path d="M10 17 15 12 10 7" />
+      <path d="M15 12H3" />
+      <path d="M12 4h7v16h-7" />
+    </svg>
+  )
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z" />
+      <path d="m16 16 5 5" />
+    </svg>
+  )
+}

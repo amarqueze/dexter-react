@@ -1,4 +1,12 @@
-export { EyeIcon, LockIcon, MailIcon, UserIcon } from './icons/form-icons'
+export { Header } from './header/header'
+export {
+  EyeIcon,
+  LockIcon,
+  LogoutIcon,
+  MailIcon,
+  SearchIcon,
+  UserIcon,
+} from './icons/form-icons'
 export { LoadingScreenProvider } from './loading-screen/loading-screen-provider'
 export { useLoadingScreen } from './loading-screen/use-loading-screen'
 export { PokeScenery } from './poke-scenery/poke-scenery'
