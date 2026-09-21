@@ -1,3 +1,40 @@
+## Pokedex API
+
+The Home page uses PokeAPI to show Pokemon data.
+
+First, the app gets the full Pokemon list:
+
+```text
+https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0
+```
+
+This list is saved in `localStorage` with the key `dexter.pokedex.catalog`.
+The app uses this list for search and pagination.
+
+For each page, the app loads details in groups of 20 Pokemon. It calls:
+
+```text
+https://pokeapi.co/api/v2/pokemon/{id}
+```
+
+The app stores the details in `localStorage` with the key
+`dexter.pokedex.details`. This avoids loading the same Pokemon details again.
+
+The detail data used by the app is:
+
+- `id`
+- `name`
+- `base_experience`
+- `height`
+- `weight`
+- ability names
+- type names
+- `sprites.front_default` as the image
+
+The current list page is also saved in `localStorage` with the key
+`dexter.pokedex.page`. If the user opens a Pokemon detail and goes back, the app
+keeps the same page.
+
 # Dexter React
 
 This is a React project with Vite.
